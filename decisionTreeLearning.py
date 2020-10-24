@@ -1,3 +1,4 @@
+import math
 import numpy as np
 
 
@@ -70,8 +71,15 @@ def functionH(np_dataset):
 
     # Extract label column from dataset.
     labels = np_dataset[:, 6]
+    n_labels = len(labels)
+    sum = 0
 
-    np.log2()
+    for i in np.unique(labels):
+        i_elements = labels[labels == i]
+        p = len(i_elements)/n_labels
+        sum += p * math.log(p, 2)
+
+    return -sum
 
 
 def remainder(l_dataset, r_dataset):
