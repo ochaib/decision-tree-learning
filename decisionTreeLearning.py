@@ -14,15 +14,45 @@ class TreeNode:
     def TreeNode(self):
         return {self.attr, self.value, self.left, self.right}
 
-    def add_leftChild(self, child):
+    def add_left_child(self, child):
         self.left = child
 
-    def add_rightChild(self, child):
+    def add_right_child(self, child):
         self.right = child
 
     @property
-    def isLeaf(self):
+    def is_leaf(self):
         return (self.left is None) & (self.right is None)
+
+
+def evaluate_information_gain(np_dataset, l_dataset, r_dataset):
+    return function_h(np_dataset) - remainder(l_dataset, r_dataset)
+
+
+def function_h(np_dataset):
+    # Sum of pk where pk is the number of samples with label k divided
+    # by total number of samples from initial dataset, for each label
+    # from 1 to k multiplied by the log2 of pk. Negated.
+
+    # Extract label column from dataset.
+    labels = np_dataset[:, 6]
+    n_labels = len(labels)
+    sum = 0
+
+    for i in np.unique(labels):
+        i_elements = labels[labels == i]
+        p = len(i_elements)/n_labels
+        sum += p * math.log(p, 2)
+
+    return -sum
+
+
+def remainder(l_dataset, r_dataset):
+    n_samples_left = np.shape(l_dataset)[0]
+    n_samples_right = np.shape(r_dataset)[0]
+    l_remainder = (n_samples_left/(n_samples_left + n_samples_right)) * function_h(l_dataset)
+    r_remainder = (n_samples_right/(n_samples_left + n_samples_right)) * function_h(r_dataset)
+    return l_remainder + r_remainder
 
 
 def decision_tree_learning(training_dataset, depth):
@@ -46,45 +76,18 @@ def decision_tree_learning(training_dataset, depth):
 
 
 # Not necessary thanks to numpy
-def sameLabels(dataset):
+def same_labels(dataset):
     # Labels are located at the 7th index of the datasets.
     tdBools = [dataset[i][7] == dataset[i - 1][7] for i in range(len(dataset))]
     return all(tdBools)
 
 
-def findSplit(dataset):
+def find_split(dataset):
     pass
 
 
-def splitOn(split):
+def split_on(split):
     pass
 
 
-def evaluateInformationGain(np_dataset, l_dataset, r_dataset):
-    return functionH(np_dataset) - remainder(l_dataset, r_dataset)
 
-
-def functionH(np_dataset):
-    # Sum of pk where pk is the number of samples with label k divided
-    # by total number of samples from initial dataset, for each label
-    # from 1 to k multiplied by the log2 of pk. Negated.
-
-    # Extract label column from dataset.
-    labels = np_dataset[:, 6]
-    n_labels = len(labels)
-    sum = 0
-
-    for i in np.unique(labels):
-        i_elements = labels[labels == i]
-        p = len(i_elements)/n_labels
-        sum += p * math.log(p, 2)
-
-    return -sum
-
-
-def remainder(l_dataset, r_dataset):
-    n_samples_left = np.shape(l_dataset)[0]
-    n_samples_right = np.shape(r_dataset)[0]
-    l_remainder = (n_samples_left/(n_samples_left + n_samples_right)) * functionH(l_dataset)
-    r_remainder = (n_samples_right/(n_samples_left + n_samples_right)) * functionH(r_dataset)
-    return l_remainder + r_remainder
