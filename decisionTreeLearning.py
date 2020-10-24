@@ -83,4 +83,8 @@ def functionH(np_dataset):
 
 
 def remainder(l_dataset, r_dataset):
-    pass
+    n_samples_left = np.shape(l_dataset)[0]
+    n_samples_right = np.shape(r_dataset)[0]
+    l_remainder = (n_samples_left/(n_samples_left + n_samples_right)) * functionH(l_dataset)
+    r_remainder = (n_samples_right/(n_samples_left + n_samples_right)) * functionH(r_dataset)
+    return l_remainder + r_remainder
