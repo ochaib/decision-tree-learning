@@ -1,5 +1,6 @@
 import math
 import numpy as np
+import sys
 
 
 class TreeNode:
@@ -24,6 +25,9 @@ class TreeNode:
     def is_leaf(self):
         return (self.left is None) & (self.right is None)
 
+    def __str__(self):
+        return f"{self.attr} > {self.value}\n" + "l: " + str(self.left) + " r: " + str(self.right)
+
 
 # Not necessary thanks to numpy
 # def same_labels(dataset):
@@ -38,7 +42,7 @@ def function_h(np_dataset):
     # from 1 to k multiplied by the log2 of pk. Negated.
 
     # Extract label column from dataset.
-    labels = np_dataset[:, 6]
+    labels = np_dataset[:, -1]
     n_labels = len(labels)
     psum = 0
 
@@ -76,7 +80,7 @@ def find_split(dataset):
     # examples on each side of the split point??
 
     # Highest information gain.
-    highest_information_gain = 0
+    highest_information_gain = None
     # Highest information gain attribute, value, left, right and sorted datasets.
     hig_attribute = None
     hig_value = None
@@ -90,7 +94,7 @@ def find_split(dataset):
         dataset = dataset[dataset[:, i].argsort()]
         # Look for independent values also recording what is before and after them.
         # Should return independent values of attribute sorted correctly.
-        independent_values = np.unique(dataset[:, i], axis=0)
+        independent_values = dataset[:, i]
 
         # Now to split dataset on independent values to retrieve sets on either side of split.
         for v in independent_values:
@@ -101,7 +105,7 @@ def find_split(dataset):
             # Calculate the information gain for each value for this attribute.
             current_ig = evaluate_information_gain(dataset, split_dataset[0], split_dataset[1])
 
-            if current_ig > highest_information_gain:
+            if not highest_information_gain or current_ig > highest_information_gain:
                 highest_information_gain = current_ig
                 hig_attribute = i
                 hig_value = v
@@ -113,23 +117,23 @@ def find_split(dataset):
 
 
 def decision_tree_learning(training_dataset, depth):
-    # Load training dataset file as numpy array.
-    np_dataset = np.loadtxt(training_dataset)
 
-    if len(np.unique(np_dataset[:, 7], axis=0)) == 1:
+    if len(np.unique(training_dataset[:, 7])) == 1:
         # Attribute refers to the index or a column of the matrix, training_dataset.
         # Create a new leaf TreeNode with the label (which is they same for all
         # entries in the dataset) as the value.
         # But looking at the dataset just because the label is the same doesn't
         # mean that the values are the same so which value are we choosing?
-        return TreeNode(np_dataset[0][7]), depth
+        return TreeNode(training_dataset[0][7]), depth
     else:
-        (attr, value, dataset, l_dataset, r_dataset) = find_split(np_dataset)
+        (attr, value, dataset, l_dataset, r_dataset) = find_split(training_dataset)
         # Return a new decision tree with root as value,
         # i.e. left and right child nodes are yet to be created.
         node = TreeNode(attr, value, None, None)
         (l_branch, l_depth) = decision_tree_learning(l_dataset, depth + 1)
         (r_branch, r_depth) = decision_tree_learning(r_dataset, depth + 1)
+        node.add_left_child(l_branch)
+        node.add_right_child(r_branch)
         return node, max(l_depth, r_depth)
 
 
@@ -138,3 +142,12 @@ def decision_tree_learning(training_dataset, depth):
 # decision tree.
 def evaluate(test_db, trained_tree):
     pass
+
+
+def main(training_dataset):
+    np_dataset = np.loadtxt(training_dataset)
+    return decision_tree_learning(np_dataset, 1)
+
+
+if __name__ == "__main__":
+    main(sys.argv[-1])
