@@ -133,6 +133,8 @@ def decision_tree_learning(training_dataset, depth):
         return node, max(l_depth, r_depth)
 
 
-
-
-
+# Takes a trained tree and a test dataset and returns the accuracy of the tree.
+# Use 10-fold cross validation on both clean and noisy datasets to evaluate
+# decision tree.
+def evaluate(test_db, trained_tree):
+    pass
