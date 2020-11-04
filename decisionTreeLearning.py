@@ -91,8 +91,9 @@ def find_split(dataset):
     hig_attribute = None
     hig_value = None
     hig_sorted_dataset = None
-    hig_l_dataset = None
-    hig_r_dataset = None
+    m, n = dataset.shape
+    hig_l_dataset = np.empty([m, n])
+    hig_r_dataset = np.empty([m, n])
 
     # Iterate through attributes e.g. 0 to 6
     for i in range(np.shape(dataset)[1] - 1):
@@ -103,28 +104,20 @@ def find_split(dataset):
 
         # Now to split dataset on isolated values, ones that are between two examples
         # with different class labels (last column), to retrieve sets on either side of split.
-        for j in range(len(dataset[:, i])):
+        for j in range(len(dataset[:, i]) - 1):
             # Check if value v is isolated the values above and below it must belong to
             # different labels (column LABEL_INDEX), continue if true, skip if not
 
             # Edge case isolation check
-            if j == 0:
-                # Check for isolation
+            if len(dataset[:, i]) > 1:
+                # Main value isolation check
                 if dataset[j, LABEL_INDEX] == dataset[j + 1, LABEL_INDEX]:
                     continue
-            if j == len(dataset[:, i]) - 1:
-                if dataset[j, LABEL_INDEX] == dataset[j - 1, LABEL_INDEX]:
-                    continue
-            # Main value isolation check
-            else:
-                if dataset[j, LABEL_INDEX] == dataset[j + 1, LABEL_INDEX] or \
-                        dataset[j, LABEL_INDEX] == dataset[j - 1, LABEL_INDEX]:
-                    continue
 
-            v = dataset[j, i]
+            split_candidate = dataset[j, i]
             # Dataset split on value, split_dataset[0] is <= value and split_dataset[1] is > value.
             # split_dataset = np.split(dataset, np.where(dataset[:, i] > v))
-            split_dataset = split_on_cond(dataset, dataset[:, i] > v)
+            split_dataset = split_on_cond(dataset, dataset[:, i] > split_candidate)
 
             # Calculate the information gain for each value for this attribute.
             current_ig = evaluate_information_gain(dataset, split_dataset[0], split_dataset[1])
@@ -132,7 +125,7 @@ def find_split(dataset):
             if not highest_information_gain or current_ig > highest_information_gain:
                 highest_information_gain = current_ig
                 hig_attribute = i
-                hig_value = v
+                hig_value = split_candidate
                 hig_sorted_dataset = dataset
                 hig_l_dataset = split_dataset[0]
                 hig_r_dataset = split_dataset[1]
