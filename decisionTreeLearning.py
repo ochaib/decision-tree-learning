@@ -3,6 +3,9 @@ import numpy as np
 import sys
 
 
+LABEL_INDEX = 7
+
+
 class TreeNode:
     treeNode = {}
 
@@ -31,8 +34,8 @@ class TreeNode:
 
 # Not necessary thanks to numpy
 # def same_labels(dataset):
-#     # Labels are located at the 7th index of the datasets.
-#     tdBools = [dataset[i][7] == dataset[i - 1][7] for i in range(len(dataset))]
+#     # Labels are located at the LABEL_INDEXth index of the datasets.
+#     tdBools = [dataset[i][LABEL_INDEX] == dataset[i - 1][LABEL_INDEX] for i in range(len(dataset))]
 #     return all(tdBools)
 
 
@@ -48,7 +51,7 @@ def function_h(np_dataset):
 
     for i in np.unique(labels):
         i_elements = labels[labels == i]
-        p = len(i_elements)/n_labels
+        p = len(i_elements) / n_labels
         psum += p * math.log(p, 2)
 
     return -psum
@@ -57,8 +60,8 @@ def function_h(np_dataset):
 def remainder(l_dataset, r_dataset):
     n_samples_left = np.shape(l_dataset)[0]
     n_samples_right = np.shape(r_dataset)[0]
-    l_remainder = (n_samples_left/(n_samples_left + n_samples_right)) * function_h(l_dataset)
-    r_remainder = (n_samples_right/(n_samples_left + n_samples_right)) * function_h(r_dataset)
+    l_remainder = (n_samples_left / (n_samples_left + n_samples_right)) * function_h(l_dataset)
+    r_remainder = (n_samples_right / (n_samples_left + n_samples_right)) * function_h(r_dataset)
     return l_remainder + r_remainder
 
 
@@ -74,8 +77,11 @@ def split_on_cond(array, cond):
 def find_split(dataset):
     # First find good split points by sorting the values of the attribute
     # (there are seven attributes)
-    # So maybe for each attribute, find a point (value) that is between two
-    # examples in sorted order i.e. only one value exists for that attribute
+
+    # Since we have ordered (real) values:
+    # For each feature, sort its values, and consider only split points that
+    # are between two examples with different class labels.
+
     # While keeping track of the running totals? of positive and negative
     # examples on each side of the split point??
 
@@ -85,22 +91,33 @@ def find_split(dataset):
     hig_attribute = None
     hig_value = None
     hig_sorted_dataset = None
-    hig_l_dataset = None
-    hig_r_dataset = None
+    m, n = dataset.shape
+    hig_l_dataset = np.empty([m, n])
+    hig_r_dataset = np.empty([m, n])
 
     # Iterate through attributes e.g. 0 to 6
-    for i in range(np.shape(dataset)[1] - 2):
+    for i in range(np.shape(dataset)[1] - 1):
         # Return dataset sorted by ith attribute (column) value
         dataset = dataset[dataset[:, i].argsort()]
         # Look for independent values also recording what is before and after them.
         # Should return independent values of attribute sorted correctly.
-        independent_values = dataset[:, i]
 
-        # Now to split dataset on independent values to retrieve sets on either side of split.
-        for v in independent_values:
+        # Now to split dataset on isolated values, ones that are between two examples
+        # with different class labels (last column), to retrieve sets on either side of split.
+        for j in range(len(dataset[:, i]) - 1):
+            # Check if value v is isolated the values above and below it must belong to
+            # different labels (column LABEL_INDEX), continue if true, skip if not
+
+            # Edge case isolation check
+            if len(dataset[:, i]) > 1:
+                # Main value isolation check
+                if dataset[j, LABEL_INDEX] == dataset[j + 1, LABEL_INDEX]:
+                    continue
+
+            split_candidate = dataset[j, i]
             # Dataset split on value, split_dataset[0] is <= value and split_dataset[1] is > value.
             # split_dataset = np.split(dataset, np.where(dataset[:, i] > v))
-            split_dataset = split_on_cond(dataset, dataset[:, i] > v)
+            split_dataset = split_on_cond(dataset, dataset[:, i] > split_candidate)
 
             # Calculate the information gain for each value for this attribute.
             current_ig = evaluate_information_gain(dataset, split_dataset[0], split_dataset[1])
@@ -108,7 +125,7 @@ def find_split(dataset):
             if not highest_information_gain or current_ig > highest_information_gain:
                 highest_information_gain = current_ig
                 hig_attribute = i
-                hig_value = v
+                hig_value = split_candidate
                 hig_sorted_dataset = dataset
                 hig_l_dataset = split_dataset[0]
                 hig_r_dataset = split_dataset[1]
@@ -117,14 +134,13 @@ def find_split(dataset):
 
 
 def decision_tree_learning(training_dataset, depth):
-
-    if len(np.unique(training_dataset[:, 7])) == 1:
+    if len(np.unique(training_dataset[:, LABEL_INDEX])) == 1:
         # Attribute refers to the index or a column of the matrix, training_dataset.
         # Create a new leaf TreeNode with the label (which is they same for all
         # entries in the dataset) as the value.
         # But looking at the dataset just because the label is the same doesn't
         # mean that the values are the same so which value are we choosing?
-        return TreeNode(training_dataset[0][7]), depth
+        return TreeNode(training_dataset[0][LABEL_INDEX]), depth
     else:
         (attr, value, dataset, l_dataset, r_dataset) = find_split(training_dataset)
         # Return a new decision tree with root as value,
