@@ -1,5 +1,6 @@
 from constants import *
 import numpy as np
+from tree import TreeNode
 
 def predict_value(features, trained_tree):
     node = trained_tree
@@ -34,25 +35,26 @@ def calculate_measures(confusion_matrix):
         print(f'''Class {i + 1}: recall = {recall}, 
                 precision = {precision}, f1 = {f1}''')
 
-def prune_tree(node, validation_db, root):
+def prune_tree(root, validation_db, accuracy):
+    return root, _prune_tree(root, root, validation_db, accuracy)
     
+
+def _prune_tree(root, node, validation_db, pre_prune_acc):
     left = node.left
     right = node.right
-    
     if left is not None:
-        prune_tree(left, validation_db, root)
+        temp_acc = _prune_tree(root, left, validation_db, pre_prune_acc)
     
     if right is not None:
-        prune_tree(right, validation_db, root)
+        curr_acc = _prune_tree(root, right, validation_db, temp_acc)
 
-    if left is None or right is None:
-        return
+    if node.is_leaf:
+        return pre_prune_acc
     
     if left.is_leaf and right.is_leaf:
         
         value = node.value
         total = left.count + right.count
-        pre_prune_acc, _ = evaluate(validation_db, root)
         
         if left.count > right.count:
             node.value = left.value
@@ -65,10 +67,17 @@ def prune_tree(node, validation_db, root):
         node.right = None
         post_prune_acc, _ = evaluate(validation_db, root)
         
-        if post_prune_acc < pre_prune_acc:
+        if post_prune_acc < curr_acc:
             node.value = value
             node.left = left
             node.right = right
             node.count = 0
+            return curr_acc
+        else:
+            return post_prune_acc
+
+    else:
+        return curr_acc
+
 
         

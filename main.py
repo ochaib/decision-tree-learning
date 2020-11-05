@@ -1,7 +1,7 @@
 import sys
 import numpy as np
 from train import train
-from evaluate import evaluate, calculate_measures
+from evaluate import evaluate, calculate_measures, prune_tree
 
 def generate_test_training(dataset, k):
     # Shuffle test dataset
@@ -34,6 +34,7 @@ def main(dataset):
         test_db = test_sets[i]
         #* train
         trained_tree, depth = train(training_db, 1)
+        
         #* evaluate
         (accuracy, confusion_matrix) = evaluate(test_db, trained_tree)
         agg_confusion_matrix += confusion_matrix
