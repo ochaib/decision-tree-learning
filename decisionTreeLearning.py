@@ -28,15 +28,21 @@ class TreeNode:
     def is_leaf(self):
         return (self.left is None) & (self.right is None)
 
+    # Called on root tree node.
+    def get_leaf_nodes(self):
+        leaf_nodes = []
+        self._collect_leaf_nodes(self, leaf_nodes)
+        return leaf_nodes
+
+    def _collect_leaf_nodes(self, node, leaf_nodes):
+        if node is not None:
+            if node.is_leaf:
+                leaf_nodes.append(node)
+            self._collect_leaf_nodes(node.left, leaf_nodes)
+            self._collect_leaf_nodes(node.right, leaf_nodes)
+
     def __str__(self):
         return f"{self.attr} > {self.value}\n" + "l: " + str(self.left) + " r: " + str(self.right)
-
-
-# Not necessary thanks to numpy
-# def same_labels(dataset):
-#     # Labels are located at the LABEL_INDEXth index of the datasets.
-#     tdBools = [dataset[i][LABEL_INDEX] == dataset[i - 1][LABEL_INDEX] for i in range(len(dataset))]
-#     return all(tdBools)
 
 
 def function_h(np_dataset):
@@ -145,7 +151,7 @@ def decision_tree_learning(training_dataset, depth):
         (attr, value, dataset, l_dataset, r_dataset) = find_split(training_dataset)
         # Return a new decision tree with root as value,
         # i.e. left and right child nodes are yet to be created.
-        node = TreeNode(attr, value, None, None)
+        node = TreeNode(value, attr, None, None)
         (l_branch, l_depth) = decision_tree_learning(l_dataset, depth + 1)
         (r_branch, r_depth) = decision_tree_learning(r_dataset, depth + 1)
         node.add_left_child(l_branch)
@@ -153,11 +159,11 @@ def decision_tree_learning(training_dataset, depth):
         return node, max(l_depth, r_depth)
 
 
-def generate_test_training(test_dataset, k):
+def generate_test_training(dataset, k):
     # Shuffle test dataset
-    np.random.shuffle(test_dataset)
+    np.random.shuffle(dataset)
     # Divide the dataset into k equal folds/splits.
-    folds = np.array_split(test_dataset, k)
+    folds = np.array_split(dataset, k)
     # Use k-1 (9) folds for training+validation and 1 for testing
     training_sets = []
     test_sets = []
@@ -172,24 +178,29 @@ def generate_test_training(test_dataset, k):
 # Use 10-fold cross validation on both clean and noisy datasets to evaluate
 # decision tree.
 def evaluate(test_dataset, trained_tree):
+    # Predictions from applying the trained tree to the test_dataset,
+    # are stored in the leaf nodes of the trained tree.
+    # TODO: Apply trained tree to test dataset.
+    leaf_nodes = trained_tree.get_leaf_nodes()
 
-    training_sets, test_sets = generate_test_training(test_dataset, 10)
-
-    # Iterate 10 times, each time testing on a different portion of the data.
-    for i in range(10):
-        training_data = training_sets[i]
-        test_data = test_sets
     # Performance on all 10 held-out test sets can then be averaged, global
     # error estimate = 1/N sum of errors.
 
     pass
 
 
-def main(training_dataset, test_dataset):
-    np_dataset = np.loadtxt(training_dataset)
-    trained_tree, depth = decision_tree_learning(np_dataset, 1)
-    evaluate(trained_tree, test_dataset)
+def main(dataset):
+    np_dataset = np.loadtxt(dataset)
+    k = 10
+    accuracy = None
+    training_sets, test_sets = generate_test_training(np_dataset, k)
+    for i in range(k):
+        training_db = training_sets[i]
+        test_db = test_sets[i]
+
+        trained_tree, depth = decision_tree_learning(training_db, 1)
+        accuracy = evaluate(trained_tree, test_db)
 
 
 if __name__ == "__main__":
-    main(sys.argv[-1], sys.argv[-2])
+    main(sys.argv[-1])
