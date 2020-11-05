@@ -38,7 +38,8 @@ def calculate_measures(confusion_matrix):
 
 
 def prune_tree(root, validation_db, accuracy):
-    return root, _prune_tree(root, root, validation_db, accuracy)
+    _prune_tree(root, root, validation_db, accuracy)
+    return root
     
 
 def _prune_tree(root, node, validation_db, pre_prune_acc):

@@ -62,9 +62,9 @@ def main(dataset):
             # evaluation
             (accuracy, confusion_matrix) = evaluate(test_db, trained_tree)
             # prune
-            prune_tree(trained_tree, validation_db, accuracy)
+            pruned_tree = prune_tree(trained_tree, validation_db, accuracy)
             # evaluate on now pruned tree
-            (pruned_accuracy, pruned_confusion_matrix) = evaluate(test_db, trained_tree)
+            (pruned_accuracy, pruned_confusion_matrix) = evaluate(test_db, pruned_tree)
             pruned_accuracies.append(pruned_accuracy)
             agg_pruned_confusion_matrix += pruned_confusion_matrix
     agg_pruned_confusion_matrix /= (k * k - 1)
