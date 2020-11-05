@@ -145,7 +145,7 @@ def decision_tree_learning(training_dataset, depth):
         (attr, value, dataset, l_dataset, r_dataset) = find_split(training_dataset)
         # Return a new decision tree with root as value,
         # i.e. left and right child nodes are yet to be created.
-        node = TreeNode(attr, value, None, None)
+        node = TreeNode(value, attr, None, None)
         (l_branch, l_depth) = decision_tree_learning(l_dataset, depth + 1)
         (r_branch, r_depth) = decision_tree_learning(r_dataset, depth + 1)
         node.add_left_child(l_branch)
@@ -159,6 +159,16 @@ def decision_tree_learning(training_dataset, depth):
 def evaluate(test_db, trained_tree):
     pass
 
+
+def predict_value(features, node):
+    while not node.is_leaf:
+        if features[node.attr] <= node.value:
+            node = node.left
+        else:
+            node = node.right
+    return node.value
+    
+        
 
 def main(training_dataset):
     np_dataset = np.loadtxt(training_dataset)
