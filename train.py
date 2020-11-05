@@ -3,7 +3,8 @@ import math
 import numpy as np
 from tree import TreeNode
 
-#? utility functions for training
+
+# utility functions for training
 def function_h(np_dataset):
     # Sum of pk where pk is the number of samples with label k divided
     # by total number of samples from initial dataset, for each label
@@ -21,6 +22,7 @@ def function_h(np_dataset):
 
     return -psum
 
+
 def remainder(l_dataset, r_dataset):
     n_samples_left = np.shape(l_dataset)[0]
     n_samples_right = np.shape(r_dataset)[0]
@@ -28,12 +30,15 @@ def remainder(l_dataset, r_dataset):
     r_remainder = (n_samples_right / (n_samples_left + n_samples_right)) * function_h(r_dataset)
     return l_remainder + r_remainder
 
+
 def evaluate_information_gain(np_dataset, l_dataset, r_dataset):
     return function_h(np_dataset) - remainder(l_dataset, r_dataset)
 
-#? training functions for splitting tree
+
+# training functions for splitting tree
 def split_on_cond(array, cond):
     return [array[cond], array[~cond]]
+
 
 def find_split(dataset):
     # First find good split points by sorting the values of the attribute
@@ -92,7 +97,8 @@ def find_split(dataset):
 
     return hig_attribute, hig_value, hig_sorted_dataset, hig_l_dataset, hig_r_dataset
 
-#? takes recursive steps to build a tree from given dataset
+
+# takes recursive steps to build a tree from given dataset
 def train(training_dataset, depth=1):
     if len(np.unique(training_dataset[:, LABEL_INDEX])) == 1:
         # Attribute refers to the index or a column of the matrix, training_dataset.

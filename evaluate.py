@@ -1,6 +1,7 @@
 from constants import *
 import numpy as np
 
+
 def predict_value(features, trained_tree):
     node = trained_tree
     while not node.is_leaf:
@@ -10,10 +11,11 @@ def predict_value(features, trained_tree):
             node = node.right
     return node.value
 
+
 def evaluate(test_db, trained_tree):
     confusion_matrix = np.zeros((4, 4))
     for i in range(len(test_db)):
-        prediction = int(predict_value(test_db[i][:LABEL_INDEX], trained_tree))
+        prediction = int(predict_value(test_db[i, :LABEL_INDEX], trained_tree))
         confusion_matrix[prediction - 1, int(test_db[i, LABEL_INDEX] - 1)] += 1
     accuracy = np.trace(confusion_matrix) / np.sum(confusion_matrix)
     return accuracy, confusion_matrix

@@ -3,6 +3,7 @@ import numpy as np
 from train import train
 from evaluate import evaluate, calculate_measures
 
+
 def generate_test_training(dataset, k):
     # Shuffle test dataset
     np.random.shuffle(dataset)
@@ -20,6 +21,7 @@ def generate_test_training(dataset, k):
     # Concatenate numpy arrays
     return np.concatenate(np.asarray(training_sets)), np.asarray(test_sets)
 
+
 # Takes a trained tree and a test dataset and returns the accuracy of the tree.
 # Use 10-fold cross validation on both clean and noisy datasets to evaluate
 # decision tree.
@@ -36,13 +38,13 @@ def main(dataset):
     for i in range(k):
         training_db = training_sets[i]
         test_db = test_sets[i]
-        #* train
+        # train
         trained_tree, depth = train(training_db, 1)
-        #* evaluate
+        # evaluate
         (accuracy, confusion_matrix) = evaluate(test_db, trained_tree)
         agg_confusion_matrix += confusion_matrix
         accuracies.append(accuracy)
-    #? Calculate average accuracy
+    # Calculate average accuracy
     agg_confusion_matrix /= k
     calculate_measures(agg_confusion_matrix)
     average_accuracy = np.average(accuracies)
@@ -52,7 +54,7 @@ def main(dataset):
     # Evaluation on pruned tree
     for i in range(k):
         test_db = test_sets[i]
-        for j in range(k-1):
+        for j in range(k - 1):
             training_db = inner_training_sets[j, i]
             validation_db = validation_sets[j, i]
             # train
@@ -72,7 +74,6 @@ def main(dataset):
 
     print("Average Accuracy: ", average_accuracy)
     print("Average Accuracy of Pruned Decision Tree: ", avg_pruned_accuracy)
-
 
 
 if __name__ == "__main__":
