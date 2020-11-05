@@ -2,7 +2,6 @@ import math
 import numpy as np
 import sys
 
-
 LABEL_INDEX = 7
 
 
@@ -182,15 +181,19 @@ def generate_test_training(dataset, k):
 def main(dataset):
     np_dataset = np.loadtxt(dataset)
     k = 10
-    accuracy = None
+    accuracies = []
     training_sets, test_sets = generate_test_training(np_dataset, k)
     for i in range(k):
         training_db = training_sets[i]
         test_db = test_sets[i]
 
         trained_tree, depth = decision_tree_learning(training_db, 1)
-        accuracy = evaluate(trained_tree, test_db)
-        
+        accuracies.append(evaluate(test_db, trained_tree))
+    # Calculate average accuracy?
+    # Or just select one with highest accuracy.
+    average_accuracy = np.average(accuracies)
+
+
 def evaluate(test_db, trained_tree):
     confusion_matrix = np.zeros(4, 4)
     for i in range(len(test_db)):
@@ -198,8 +201,6 @@ def evaluate(test_db, trained_tree):
         confusion_matrix[prediction, i[LABEL_INDEX]] += 1
     accuracy = np.trace(confusion_matrix) / np.sum(confusion_matrix)
     return accuracy
-
-        
 
 
 def predict_value(features, trained_tree):
@@ -210,7 +211,8 @@ def predict_value(features, trained_tree):
         else:
             node = node.right
     return node.value
-    
+
+
 def split_by_fold(dataset, num_folds, fold_index):
     size = len(dataset) // num_folds
     start_index = size * fold_index
@@ -219,9 +221,7 @@ def split_by_fold(dataset, num_folds, fold_index):
                        + list(range(end_index, len(dataset)))
     test_dataset = dataset[start_index:end_index]
     training_dataset = dataset[training_indices]
-    return (test_dataset, training_dataset)
-
-
+    return test_dataset, training_dataset
 
 
 if __name__ == "__main__":
