@@ -176,7 +176,9 @@ def evaluate(test_dataset, trained_tree):
     training_sets, test_sets = generate_test_training(test_dataset, 10)
 
     # Iterate 10 times, each time testing on a different portion of the data.
-
+    for i in range(10):
+        training_data = training_sets[i]
+        test_data = test_sets
     # Performance on all 10 held-out test sets can then be averaged, global
     # error estimate = 1/N sum of errors.
 
