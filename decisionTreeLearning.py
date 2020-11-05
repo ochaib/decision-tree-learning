@@ -121,8 +121,7 @@ def find_split(dataset):
 
             split_candidate = dataset[j, i]
             # Dataset split on value, split_dataset[0] is <= value and split_dataset[1] is > value.
-            # split_dataset = np.split(dataset, np.where(dataset[:, i] > v))
-            split_dataset = split_on_cond(dataset, dataset[:, i] > split_candidate)
+            split_dataset = split_on_cond(dataset, dataset[:, i] <= split_candidate)
 
             # Calculate the information gain for each value for this attribute.
             current_ig = evaluate_information_gain(dataset, split_dataset[0], split_dataset[1])
@@ -185,7 +184,6 @@ def main(dataset):
     agg_confusion_matrix = np.zeros((4, 4))
     for i in range(k):
         training_db = training_sets[i]
-        print(np.shape(training_db))
         test_db = test_sets[i]
         trained_tree, depth = decision_tree_learning(training_db, 1)
         (accuracy, confusion_matrix) = evaluate(test_db, trained_tree)
@@ -201,7 +199,6 @@ def main(dataset):
 
 def evaluate(test_db, trained_tree):
     confusion_matrix = np.zeros((4, 4))
-    print(test_db.shape)
     for i in range(len(test_db)):
         prediction = int(predict_value(test_db[i][:LABEL_INDEX], trained_tree))
         confusion_matrix[prediction - 1, int(test_db[i, LABEL_INDEX] - 1)] += 1
