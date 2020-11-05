@@ -24,7 +24,7 @@ def plot_node(node, depth=1, xmin=0, xmax=1, arrow_heads=False):
           horizontalalignment='center',  bbox=dict(facecolor='none', edgecolor='purple', pad=3.0))
 
 
-def visualize(tree_root, depth, save='test.png'):
+def visualize(tree_root, depth, save=False):
     plt.clf()
     fig = plt.figure()
     plt.axis('off')
