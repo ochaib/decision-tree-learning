@@ -176,10 +176,22 @@ def predict_value(features, trained_tree):
             node = node.right
     return node.value
     
-        
+def split_by_fold(dataset, num_folds, fold_index):
+    size = len(dataset) // num_folds
+    start_index = size * fold_index
+    end_index = start_index + size
+    training_indices = list(range(0, start_index)) \
+                       + list(range(end_index, len(dataset)))
+    test_dataset = dataset[start_index:end_index]
+    training_dataset = dataset[training_indices]
+    return (test_dataset, training_dataset)
+
 
 def main(training_dataset):
     np_dataset = np.loadtxt(training_dataset)
+    np.random.shuffle(np_dataset)
+    print(np_dataset)
+    print(split_by_fold(np_dataset, 10, 0))
     return decision_tree_learning(np_dataset, 1)
 
 
