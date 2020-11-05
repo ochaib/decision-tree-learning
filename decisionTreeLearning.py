@@ -183,25 +183,44 @@ def main(dataset):
     k = 10
     accuracies = []
     training_sets, test_sets = generate_test_training(np_dataset, k)
+    agg_confusion_matrix = np.zeros((4, 4))
     for i in range(k):
         training_db = training_sets[i]
         test_db = test_sets[i]
-
+        print(training_db)
         trained_tree, depth = decision_tree_learning(training_db, 1)
-        accuracies.append(evaluate(test_db, trained_tree))
+        (accuracy, confusion_matrix)  = evaluate(test_db, trained_tree)
+        agg_confusion_matrix += confusion_matrix
+        accuracies.append(accuracy)
     # Calculate average accuracy?
     # Or just select one with highest accuracy.
+    agg_confusion_matrix /= k
+    calculate_measures(agg_confusion_matrix)
     average_accuracy = np.average(accuracies)
-
+    print(average_accuracy)
 
 def evaluate(test_db, trained_tree):
-    confusion_matrix = np.zeros(4, 4)
+    confusion_matrix = np.zeros((4, 4))
     for i in range(len(test_db)):
-        prediction = predict_value(i[:LABEL_INDEX], trained_tree)
-        confusion_matrix[prediction, i[LABEL_INDEX]] += 1
+        prediction = predict_value(test_db[i][:LABEL_INDEX], trained_tree)
+        confusion_matrix[prediction - 1, test_db[LABEL_INDEX] - 1] += 1
     accuracy = np.trace(confusion_matrix) / np.sum(confusion_matrix)
-    return accuracy
+    return accuracy, confusion_matrix
 
+def calculate_measures(confusion_matrix):
+    column_totals = np.sum(confusion_matrix, axis = 0)
+    row_totals = np.sum(confusion_matrix, axis = 1)
+    for i in len(confusion_matrix):
+        true_positives = confusion_matrix[i][i]
+        false_positives = column_totals[i] \
+            - true_positives
+        false_negatives = row_totals[i] \
+            - true_positives
+        recall = true_positives / (true_positives + false_negatives)
+        precision = true_positives / (true_positives + false_positives)
+        f1 = (2 * precision * recall) / (precision + recall)
+        print(f'''Class {i + 1}: recall = {recall}, 
+                precision = {precision}, f1 = {f1}''')
 
 def predict_value(features, trained_tree):
     node = trained_tree
@@ -213,15 +232,6 @@ def predict_value(features, trained_tree):
     return node.value
 
 
-def split_by_fold(dataset, num_folds, fold_index):
-    size = len(dataset) // num_folds
-    start_index = size * fold_index
-    end_index = start_index + size
-    training_indices = list(range(0, start_index)) \
-                       + list(range(end_index, len(dataset)))
-    test_dataset = dataset[start_index:end_index]
-    training_dataset = dataset[training_indices]
-    return test_dataset, training_dataset
 
 
 if __name__ == "__main__":
