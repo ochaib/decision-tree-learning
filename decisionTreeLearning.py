@@ -177,16 +177,6 @@ def generate_test_training(dataset, k):
 # Takes a trained tree and a test dataset and returns the accuracy of the tree.
 # Use 10-fold cross validation on both clean and noisy datasets to evaluate
 # decision tree.
-def evaluate(test_dataset, trained_tree):
-    # Predictions from applying the trained tree to the test_dataset,
-    # are stored in the leaf nodes of the trained tree.
-    # TODO: Apply trained tree to test dataset.
-    leaf_nodes = trained_tree.get_leaf_nodes()
-
-    # Performance on all 10 held-out test sets can then be averaged, global
-    # error estimate = 1/N sum of errors.
-
-    pass
 
 
 def main(dataset):
@@ -200,6 +190,38 @@ def main(dataset):
 
         trained_tree, depth = decision_tree_learning(training_db, 1)
         accuracy = evaluate(trained_tree, test_db)
+        
+def evaluate(test_db, trained_tree):
+    confusion_matrix = np.zeros(4, 4)
+    for i in range(len(test_db)):
+        prediction = predict_value(i[:LABEL_INDEX], trained_tree)
+        confusion_matrix[prediction, i[LABEL_INDEX]] += 1
+    accuracy = np.trace(confusion_matrix) / np.sum(confusion_matrix)
+    return accuracy
+
+        
+
+
+def predict_value(features, trained_tree):
+    node = trained_tree
+    while not node.is_leaf:
+        if features[node.attr] <= node.value:
+            node = node.left
+        else:
+            node = node.right
+    return node.value
+    
+def split_by_fold(dataset, num_folds, fold_index):
+    size = len(dataset) // num_folds
+    start_index = size * fold_index
+    end_index = start_index + size
+    training_indices = list(range(0, start_index)) \
+                       + list(range(end_index, len(dataset)))
+    test_dataset = dataset[start_index:end_index]
+    training_dataset = dataset[training_indices]
+    return (test_dataset, training_dataset)
+
+
 
 
 if __name__ == "__main__":
