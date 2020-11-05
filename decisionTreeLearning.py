@@ -153,17 +153,41 @@ def decision_tree_learning(training_dataset, depth):
         return node, max(l_depth, r_depth)
 
 
+def generate_test_training(test_dataset, k):
+    # Shuffle test dataset
+    np.random.shuffle(test_dataset)
+    # Divide the dataset into k equal folds/splits.
+    folds = np.array_split(test_dataset, k)
+    # Use k-1 (9) folds for training+validation and 1 for testing
+    training_sets = []
+    test_sets = []
+    for i in range(k):
+        copy = folds.copy()
+        test_sets.append(copy.pop(i))
+        training_sets.append(copy)
+    return training_sets, test_sets
+
+
 # Takes a trained tree and a test dataset and returns the accuracy of the tree.
 # Use 10-fold cross validation on both clean and noisy datasets to evaluate
 # decision tree.
-def evaluate(test_db, trained_tree):
+def evaluate(test_dataset, trained_tree):
+
+    training_sets, test_sets = generate_test_training(test_dataset, 10)
+
+    # Iterate 10 times, each time testing on a different portion of the data.
+
+    # Performance on all 10 held-out test sets can then be averaged, global
+    # error estimate = 1/N sum of errors.
+
     pass
 
 
-def main(training_dataset):
+def main(training_dataset, test_dataset):
     np_dataset = np.loadtxt(training_dataset)
-    return decision_tree_learning(np_dataset, 1)
+    trained_tree, depth = decision_tree_learning(np_dataset, 1)
+    evaluate(trained_tree, test_dataset)
 
 
 if __name__ == "__main__":
-    main(sys.argv[-1])
+    main(sys.argv[-1], sys.argv[-2])
