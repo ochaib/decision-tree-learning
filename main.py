@@ -1,7 +1,7 @@
 import sys
 import numpy as np
 from train import train
-from evaluate import evaluate, calculate_measures
+from evaluate import evaluate, calculate_measures, prune_tree
 
 
 def generate_test_training(dataset, k):
@@ -62,8 +62,7 @@ def main(dataset):
             # evaluation
             (accuracy, confusion_matrix) = evaluate(test_db, trained_tree)
             # prune
-            # TODO: Pruning function,
-            #  prune_function(trained_tree, validation_db, accuracy)
+            prune_tree(trained_tree, validation_db, accuracy)
             # evaluate on now pruned tree
             (pruned_accuracy, pruned_confusion_matrix) = evaluate(test_db, trained_tree)
             pruned_accuracies.append(pruned_accuracy)

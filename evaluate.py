@@ -35,3 +35,52 @@ def calculate_measures(confusion_matrix):
         f1 = (2 * precision * recall) / (precision + recall)
         print(f'''Class {i + 1}: recall = {recall}, 
                 precision = {precision}, f1 = {f1}''')
+
+
+def prune_tree(root, validation_db, accuracy):
+    return root, _prune_tree(root, root, validation_db, accuracy)
+    
+
+def _prune_tree(root, node, validation_db, pre_prune_acc):
+    left = node.left
+    right = node.right
+    # Added due to reference before assignment warning
+    temp_acc = pre_prune_acc
+    curr_acc = pre_prune_acc
+
+    if left is not None:
+        temp_acc = _prune_tree(root, left, validation_db, pre_prune_acc)
+    
+    if right is not None:
+        curr_acc = _prune_tree(root, right, validation_db, temp_acc)
+
+    if node.is_leaf:
+        return pre_prune_acc
+    
+    if left.is_leaf and right.is_leaf:
+        
+        value = node.value
+        total = left.count + right.count
+        
+        if left.count > right.count:
+            node.value = left.value
+        
+        else:
+            node.value = right.value
+        
+        node.count = total
+        node.left = None
+        node.right = None
+        post_prune_acc, _ = evaluate(validation_db, root)
+        
+        if post_prune_acc < curr_acc:
+            node.value = value
+            node.left = left
+            node.right = right
+            node.count = 0
+            return curr_acc
+        else:
+            return post_prune_acc
+
+    else:
+        return curr_acc
