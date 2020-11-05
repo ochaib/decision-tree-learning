@@ -100,7 +100,9 @@ def train(training_dataset, depth=1):
         # entries in the dataset) as the value.
         # But looking at the dataset just because the label is the same doesn't
         # mean that the values are the same so which value are we choosing?
-        return TreeNode(training_dataset[0][LABEL_INDEX]), depth
+        node = TreeNode(training_dataset[0][LABEL_INDEX])
+        node.count = len(training_dataset)
+        return node, depth
     else:
         (attr, value, dataset, l_dataset, r_dataset) = find_split(training_dataset)
         # Return a new decision tree with root as value,
@@ -111,3 +113,9 @@ def train(training_dataset, depth=1):
         node.add_left_child(l_branch)
         node.add_right_child(r_branch)
         return node, max(l_depth, r_depth)
+
+
+
+        
+
+        

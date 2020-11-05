@@ -33,3 +33,41 @@ def calculate_measures(confusion_matrix):
         f1 = (2 * precision * recall) / (precision + recall)
         print(f'''Class {i + 1}: recall = {recall}, 
                 precision = {precision}, f1 = {f1}''')
+
+def prune_tree(node, validation_db, root):
+    
+    left = node.left
+    right = node.right
+    
+    if left is not None:
+        prune_tree(left, validation_db, root)
+    
+    if right is not None:
+        prune_tree(right, validation_db, root)
+    
+    if left is not None and right is not None \
+        and left.is_leaf and right.is_leaf:
+        
+        value = node.value
+        count = node.count
+        total = left.count + right.count
+        pre_prune_acc, _ = evaluate(validation_db, root)
+        
+        if left.count > right.count:
+            node.value = left.value
+        
+        else:
+            node.value = right.value
+        
+        node.count = total
+        node.left = None
+        node.right = None
+        post_prune_acc, _ = evaluate(validation_db, root)
+        
+        if post_prune_acc < pre_prune_acc:
+            node.value = value
+            node.left = left
+            node.right = right
+            node.count = count
+
+        
