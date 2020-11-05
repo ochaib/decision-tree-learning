@@ -2,7 +2,6 @@ import math
 import numpy as np
 import sys
 
-
 LABEL_INDEX = 7
 
 
@@ -28,15 +27,21 @@ class TreeNode:
     def is_leaf(self):
         return (self.left is None) & (self.right is None)
 
+    # Called on root tree node.
+    def get_leaf_nodes(self):
+        leaf_nodes = []
+        self._collect_leaf_nodes(self, leaf_nodes)
+        return leaf_nodes
+
+    def _collect_leaf_nodes(self, node, leaf_nodes):
+        if node is not None:
+            if node.is_leaf:
+                leaf_nodes.append(node)
+            self._collect_leaf_nodes(node.left, leaf_nodes)
+            self._collect_leaf_nodes(node.right, leaf_nodes)
+
     def __str__(self):
         return f"{self.attr} > {self.value}\n" + "l: " + str(self.left) + " r: " + str(self.right)
-
-
-# Not necessary thanks to numpy
-# def same_labels(dataset):
-#     # Labels are located at the LABEL_INDEXth index of the datasets.
-#     tdBools = [dataset[i][LABEL_INDEX] == dataset[i - 1][LABEL_INDEX] for i in range(len(dataset))]
-#     return all(tdBools)
 
 
 def function_h(np_dataset):
@@ -116,8 +121,7 @@ def find_split(dataset):
 
             split_candidate = dataset[j, i]
             # Dataset split on value, split_dataset[0] is <= value and split_dataset[1] is > value.
-            # split_dataset = np.split(dataset, np.where(dataset[:, i] > v))
-            split_dataset = split_on_cond(dataset, dataset[:, i] > split_candidate)
+            split_dataset = split_on_cond(dataset, dataset[:, i] <= split_candidate)
 
             # Calculate the information gain for each value for this attribute.
             current_ig = evaluate_information_gain(dataset, split_dataset[0], split_dataset[1])
@@ -145,7 +149,7 @@ def decision_tree_learning(training_dataset, depth):
         (attr, value, dataset, l_dataset, r_dataset) = find_split(training_dataset)
         # Return a new decision tree with root as value,
         # i.e. left and right child nodes are yet to be created.
-        node = TreeNode(attr, value, None, None)
+        node = TreeNode(value, attr, None, None)
         (l_branch, l_depth) = decision_tree_learning(l_dataset, depth + 1)
         (r_branch, r_depth) = decision_tree_learning(r_dataset, depth + 1)
         node.add_left_child(l_branch)
@@ -153,16 +157,79 @@ def decision_tree_learning(training_dataset, depth):
         return node, max(l_depth, r_depth)
 
 
+def generate_test_training(dataset, k):
+    # Shuffle test dataset
+    np.random.shuffle(dataset)
+    # Divide the dataset into k equal folds/splits.
+    folds = np.array_split(dataset, k)
+    # Use k-1 (9) folds for training+validation and 1 for testing
+    training_sets = []
+    test_sets = []
+    for i in range(k):
+        copy = folds.copy()
+        test_sets.append(copy.pop(i))
+        training_sets.append(copy)
+    # Concatenate numpy arrays
+    return np.concatenate(np.asarray(training_sets)), np.asarray(test_sets)
+
+
 # Takes a trained tree and a test dataset and returns the accuracy of the tree.
 # Use 10-fold cross validation on both clean and noisy datasets to evaluate
 # decision tree.
+def main(dataset):
+    np_dataset = np.loadtxt(dataset)
+    k = 10
+    accuracies = []
+    training_sets, test_sets = generate_test_training(np_dataset, k)
+    agg_confusion_matrix = np.zeros((4, 4))
+    for i in range(k):
+        training_db = training_sets[i]
+        test_db = test_sets[i]
+        trained_tree, depth = decision_tree_learning(training_db, 1)
+        (accuracy, confusion_matrix) = evaluate(test_db, trained_tree)
+        agg_confusion_matrix += confusion_matrix
+        accuracies.append(accuracy)
+    # Calculate average accuracy?
+    # Or just select one with highest accuracy.
+    agg_confusion_matrix /= k
+    calculate_measures(agg_confusion_matrix)
+    average_accuracy = np.average(accuracies)
+    print("Average Accuracy: ", average_accuracy)
+
+
 def evaluate(test_db, trained_tree):
-    pass
+    confusion_matrix = np.zeros((4, 4))
+    for i in range(len(test_db)):
+        prediction = int(predict_value(test_db[i][:LABEL_INDEX], trained_tree))
+        confusion_matrix[prediction - 1, int(test_db[i, LABEL_INDEX] - 1)] += 1
+    accuracy = np.trace(confusion_matrix) / np.sum(confusion_matrix)
+    return accuracy, confusion_matrix
 
 
-def main(training_dataset):
-    np_dataset = np.loadtxt(training_dataset)
-    return decision_tree_learning(np_dataset, 1)
+def calculate_measures(confusion_matrix):
+    column_totals = np.sum(confusion_matrix, axis=0)
+    row_totals = np.sum(confusion_matrix, axis=1)
+    for i in range(len(confusion_matrix)):
+        true_positives = confusion_matrix[i][i]
+        false_positives = column_totals[i] \
+                          - true_positives
+        false_negatives = row_totals[i] \
+                          - true_positives
+        recall = true_positives / (true_positives + false_negatives)
+        precision = true_positives / (true_positives + false_positives)
+        f1 = (2 * precision * recall) / (precision + recall)
+        print(f'''Class {i + 1}: recall = {recall}, 
+                precision = {precision}, f1 = {f1}''')
+
+
+def predict_value(features, trained_tree):
+    node = trained_tree
+    while not node.is_leaf:
+        if features[node.attr] <= node.value:
+            node = node.left
+        else:
+            node = node.right
+    return node.value
 
 
 if __name__ == "__main__":
