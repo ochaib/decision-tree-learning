@@ -44,12 +44,13 @@ def prune_tree(node, validation_db, root):
     
     if right is not None:
         prune_tree(right, validation_db, root)
+
+    if left is None or right is None:
+        return
     
-    if left is not None and right is not None \
-        and left.is_leaf and right.is_leaf:
+    if left.is_leaf and right.is_leaf:
         
         value = node.value
-        count = node.count
         total = left.count + right.count
         pre_prune_acc, _ = evaluate(validation_db, root)
         
@@ -68,6 +69,6 @@ def prune_tree(node, validation_db, root):
             node.value = value
             node.left = left
             node.right = right
-            node.count = count
+            node.count = 0
 
         
