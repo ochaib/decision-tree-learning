@@ -2,6 +2,7 @@ import sys
 import numpy as np
 from train import train
 from evaluate import evaluate, calculate_measures
+from visualizer import visualize
 
 def generate_test_training(dataset, k):
     # Shuffle test dataset
@@ -34,6 +35,8 @@ def main(dataset):
         test_db = test_sets[i]
         #* train
         trained_tree, depth = train(training_db, 1)
+        #! TODO: remove this
+        if i == 0: visualize(trained_tree, depth)
         #* evaluate
         (accuracy, confusion_matrix) = evaluate(test_db, trained_tree)
         agg_confusion_matrix += confusion_matrix
