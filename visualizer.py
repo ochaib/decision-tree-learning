@@ -18,26 +18,13 @@ def plot_node(node, depth=1, xmin=0, xmax=1):
     plt.text(x, y, f'Room {int(node.value)}', horizontalalignment='center')
 
 def visualize(tree_root, depth, save='test.png'):
-
-  widths = [0 for _ in range(depth)]
-  def get_width(node, depth=0):
-    widths[depth] += 1
-    if not node.is_leaf:
-      get_width(node.left, depth+1)
-      get_width(node.right, depth+1)
-  get_width(tree_root)
-  width = max(widths)
-
-  print("depth:", depth)
-  print("width:", width)
-
   plt.clf()
   fig = plt.figure()
   plt.axis('off')
   plt.tight_layout()
   plt.ylim((0,Y_INCREMENT*depth*2))
   plot_node(tree_root)
-  fig.set_size_inches(width**2, depth)
+  fig.set_size_inches(depth**2, depth)
   if save:
     plt.savefig(save)
   else:
