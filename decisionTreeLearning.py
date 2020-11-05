@@ -196,7 +196,7 @@ def main(dataset):
     agg_confusion_matrix /= k
     calculate_measures(agg_confusion_matrix)
     average_accuracy = np.average(accuracies)
-    print(average_accuracy)
+    print("Average Accuracy: ", average_accuracy)
 
 
 def evaluate(test_db, trained_tree):
@@ -210,14 +210,14 @@ def evaluate(test_db, trained_tree):
 
 
 def calculate_measures(confusion_matrix):
-    column_totals = np.sum(confusion_matrix, axis = 0)
-    row_totals = np.sum(confusion_matrix, axis = 1)
+    column_totals = np.sum(confusion_matrix, axis=0)
+    row_totals = np.sum(confusion_matrix, axis=1)
     for i in range(len(confusion_matrix)):
         true_positives = confusion_matrix[i][i]
         false_positives = column_totals[i] \
-            - true_positives
+                          - true_positives
         false_negatives = row_totals[i] \
-            - true_positives
+                          - true_positives
         recall = true_positives / (true_positives + false_negatives)
         precision = true_positives / (true_positives + false_positives)
         f1 = (2 * precision * recall) / (precision + recall)
