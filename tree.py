@@ -34,4 +34,8 @@ class TreeNode:
             self._collect_leaf_nodes(node.right, leaf_nodes)
 
     def __str__(self):
-        return f"{self.attr} > {self.value}\n" + "L: " + str(self.left) + " R: " + str(self.right)
+        s = f"{self.attr} > {self.value}"
+        if not self.is_leaf:
+            s += f"\nL: {self.left}"
+            s += f"\nR: {self.right}"
+        return s

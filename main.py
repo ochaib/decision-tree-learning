@@ -2,6 +2,7 @@ import sys
 import numpy as np
 from train import train
 from evaluate import evaluate, calculate_measures
+from visualizer import visualize
 
 def generate_test_training(dataset, k):
     # Shuffle test dataset
