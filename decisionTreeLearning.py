@@ -157,10 +157,18 @@ def decision_tree_learning(training_dataset, depth):
 # Use 10-fold cross validation on both clean and noisy datasets to evaluate
 # decision tree.
 def evaluate(test_db, trained_tree):
-    pass
+    confusion_matrix = np.zeros(4, 4)
+    for i in range(len(test_db)):
+        prediction = predict_value(i[:LABEL_INDEX], trained_tree)
+        confusion_matrix[prediction, i[LABEL_INDEX]] += 1
+    accuracy = np.trace(confusion_matrix) / np.sum(confusion_matrix)
+    return accuracy
+
+        
 
 
-def predict_value(features, node):
+def predict_value(features, trained_tree):
+    node = trained_tree
     while not node.is_leaf:
         if features[node.attr] <= node.value:
             node = node.left
