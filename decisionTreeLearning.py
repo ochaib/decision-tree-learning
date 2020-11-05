@@ -170,7 +170,8 @@ def generate_test_training(dataset, k):
         copy = folds.copy()
         test_sets.append(copy.pop(i))
         training_sets.append(copy)
-    return training_sets, test_sets
+    # Concatenate numpy arrays
+    return np.concatenate(np.asarray(training_sets)), np.asarray(test_sets)
 
 
 # Takes a trained tree and a test dataset and returns the accuracy of the tree.
@@ -182,10 +183,15 @@ def main(dataset):
     np_dataset = np.loadtxt(dataset)
     k = 10
     accuracies = []
+    print("np dataset shape:", np.shape(np_dataset))
     training_sets, test_sets = generate_test_training(np_dataset, k)
+    print("training sets shape: ", training_sets.shape)
+    print("test sets shape: ", np.shape(test_sets))
     for i in range(k):
         training_db = training_sets[i]
+        print(np.shape(training_db))
         test_db = test_sets[i]
+        print(np.shape(test_db))
 
         trained_tree, depth = decision_tree_learning(training_db, 1)
         accuracies.append(evaluate(test_db, trained_tree))
@@ -195,7 +201,7 @@ def main(dataset):
 
 
 def evaluate(test_db, trained_tree):
-    confusion_matrix = np.zeros(4, 4)
+    confusion_matrix = np.zeros((4, 4))
     for i in range(len(test_db)):
         prediction = predict_value(i[:LABEL_INDEX], trained_tree)
         confusion_matrix[prediction, i[LABEL_INDEX]] += 1
