@@ -36,9 +36,9 @@ def evaluate(test_db, trained_tree):
 
 def calculate_measures(confusion_matrix):
     """
-    Using the confusion matrix calculate the macro-averaged:
-    recall and precision rates per class, the F1-measures derived
-    from the recall and precision rates of the previous step.
+    Using the averaged confusion matrix calculate the recall and precision
+    rates per class, the F1-measures derived from the recall and precision
+    rates of the previous step.
     :param confusion_matrix: Confusion matrix calculated from the
                              evaluation function.
     :return: Print the class and the associated measures, recall,
