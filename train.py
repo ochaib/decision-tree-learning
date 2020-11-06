@@ -144,11 +144,11 @@ def prune_tree(root, validation_db, accuracy):
     :return: The pruned tree's root node.
     :rtype: TreeNode
     """
-    _prune_tree(root, root, validation_db, accuracy)
-    return root
+    _, depth = _prune_tree(root, root, validation_db, accuracy, 1)
+    return root, depth
     
 
-def _prune_tree(root, node, validation_db, pre_prune_acc):
+def _prune_tree(root, node, validation_db, pre_prune_acc, depth):
     left = node.left
     right = node.right
     # Added due to reference before assignment warning.
@@ -156,13 +156,13 @@ def _prune_tree(root, node, validation_db, pre_prune_acc):
     curr_acc = pre_prune_acc
 
     if left is not None:
-        temp_acc = _prune_tree(root, left, validation_db, pre_prune_acc)
+        temp_acc, l_depth = _prune_tree(root, left, validation_db, pre_prune_acc, depth + 1)
     
     if right is not None:
-        curr_acc = _prune_tree(root, right, validation_db, temp_acc)
+        curr_acc, r_depth = _prune_tree(root, right, validation_db, temp_acc, depth + 1)
 
     if node.is_leaf:
-        return pre_prune_acc
+        return pre_prune_acc, depth
     
     if left.is_leaf and right.is_leaf:
         value = node.value
@@ -184,9 +184,9 @@ def _prune_tree(root, node, validation_db, pre_prune_acc):
             node.left = left
             node.right = right
             node.count = 0
-            return curr_acc
+            return curr_acc, max(l_depth, r_depth)
         else:
-            return post_prune_acc
+            return post_prune_acc, depth
 
     else:
-        return curr_acc
+        return curr_acc, max(l_depth, r_depth)
