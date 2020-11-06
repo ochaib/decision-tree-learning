@@ -70,8 +70,8 @@ def find_split(dataset):
         # Now to split dataset on isolated values, ones that are between two examples
         # with different class labels (last column), to retrieve sets on either side of split.
         for j in range(len(dataset[:, i]) - 1):
-            # Check if value v is isolated the values above and below it must belong to
-            # different labels (column LABEL_INDEX), continue if true, skip if not
+            # Check if value v's label differs from the label of the value below it
+            # (column LABEL_INDEX), continue to the next loop iteration if true.
 
             # Edge case isolation check
             if len(dataset[:, i]) > 1:
