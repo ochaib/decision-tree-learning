@@ -4,7 +4,20 @@ from train import train
 from evaluate import evaluate, calculate_measures, prune_tree
 from visualizer import visualize
 
+
 def generate_test_training(dataset, k):
+    """
+    Split the given dataset to produce k different collections of
+    training/test datasets with the test dataset taking a different fold
+    each time and the training dataset being a concatenation of the remaining
+    datasets.
+    :param dataset: Dataset to be split.
+    :param k: Fold count
+    :type dataset: np.array
+    :type k: int
+    :return: Training datasets, test datasets
+    :rtype: np.array, np.array
+    """
     # Shuffle test dataset
     np.random.shuffle(dataset)
 
