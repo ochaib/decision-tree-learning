@@ -13,7 +13,8 @@ def plot_node(node, depth=1, xmin=0, xmax=1, arrow_heads=False):
 
     if not node.is_leaf:
         depth += 1
-        plt.text(x, y, f'Signal {node.attr + 1} > {int(node.value)}', horizontalalignment='center')
+        plt.text(
+            x, y, f'Signal {node.attr + 1} > {int(node.value)}', horizontalalignment='center')
         plot_node(node.left, depth + 1, xmin, x)
         plot_node(node.right, depth + 1, x, xmax)
         if arrow_heads:
@@ -22,8 +23,10 @@ def plot_node(node, depth=1, xmin=0, xmax=1, arrow_heads=False):
             plt.arrow(x, y + PADDING, (xmax + x) / 2 - x,
                       Y_INCREMENT * 2 - PADDING * 2, color='green')
         else:
-            plt.plot([x, (xmin + x) / 2], [y + PADDING, y + Y_INCREMENT * 2 - PADDING], 'r-')
-            plt.plot([x, (xmax + x) / 2], [y + PADDING, y + Y_INCREMENT * 2 - PADDING], 'g-')
+            plt.plot([x, (xmin + x) / 2], [y + PADDING,
+                                           y + Y_INCREMENT * 2 - PADDING], 'r-')
+            plt.plot([x, (xmax + x) / 2], [y + PADDING,
+                                           y + Y_INCREMENT * 2 - PADDING], 'g-')
     else:
         plt.text(x, y, f'Room {int(node.value)}',
                  horizontalalignment='center',

@@ -65,7 +65,8 @@ def main(dataset):
     average_accuracy = np.average(accuracies)
 
     # Tree pruning
-    inner_training_sets, validation_sets = generate_test_training(training_sets, k - 1)
+    inner_training_sets, validation_sets = generate_test_training(
+        training_sets, k - 1)
     # Evaluation on pruned tree
     for i in range(k):
         test_db = test_sets[i]
@@ -77,9 +78,11 @@ def main(dataset):
             # Evaluation
             (accuracy, confusion_matrix) = evaluate(validation_db, trained_tree)
             # Prune
-            pruned_tree, pruned_depth = prune_tree(trained_tree, validation_db, accuracy)
+            pruned_tree, pruned_depth = prune_tree(
+                trained_tree, validation_db, accuracy)
             # Evaluate on now pruned tree
-            (pruned_accuracy, pruned_confusion_matrix) = evaluate(test_db, pruned_tree)
+            (pruned_accuracy, pruned_confusion_matrix) = evaluate(
+                test_db, pruned_tree)
             pruned_accuracies.append(pruned_accuracy)
             agg_pruned_confusion_matrix += pruned_confusion_matrix
     agg_pruned_confusion_matrix /= (k * (k - 1))

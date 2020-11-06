@@ -27,8 +27,10 @@ def function_h(np_dataset):
 def remainder(l_dataset, r_dataset):
     n_samples_left = np.shape(l_dataset)[0]
     n_samples_right = np.shape(r_dataset)[0]
-    l_remainder = (n_samples_left / (n_samples_left + n_samples_right)) * function_h(l_dataset)
-    r_remainder = (n_samples_right / (n_samples_left + n_samples_right)) * function_h(r_dataset)
+    l_remainder = (n_samples_left / (n_samples_left +
+                                     n_samples_right)) * function_h(l_dataset)
+    r_remainder = (n_samples_right / (n_samples_left +
+                                      n_samples_right)) * function_h(r_dataset)
     return l_remainder + r_remainder
 
 
@@ -81,10 +83,12 @@ def find_split(dataset):
 
             split_candidate = dataset[j, i]
             # Dataset split on value, split_dataset[0] is <= value and split_dataset[1] is > value.
-            split_dataset = split_on_cond(dataset, dataset[:, i] <= split_candidate)
+            split_dataset = split_on_cond(
+                dataset, dataset[:, i] <= split_candidate)
 
             # Calculate the information gain for each value for this attribute.
-            current_ig = evaluate_information_gain(dataset, split_dataset[0], split_dataset[1])
+            current_ig = evaluate_information_gain(
+                dataset, split_dataset[0], split_dataset[1])
 
             if not highest_information_gain or current_ig > highest_information_gain:
                 highest_information_gain = current_ig
@@ -145,7 +149,7 @@ def prune_tree(root, validation_db, accuracy):
     """
     _, depth = _prune_tree(root, root, validation_db, accuracy, 1)
     return root, depth
-    
+
 
 def _prune_tree(root, node, validation_db, pre_prune_acc, depth):
     left = node.left
@@ -157,29 +161,31 @@ def _prune_tree(root, node, validation_db, pre_prune_acc, depth):
     r_depth = depth
 
     if left is not None:
-        temp_acc, l_depth = _prune_tree(root, left, validation_db, pre_prune_acc, depth + 1)
-    
+        temp_acc, l_depth = _prune_tree(
+            root, left, validation_db, pre_prune_acc, depth + 1)
+
     if right is not None:
-        curr_acc, r_depth = _prune_tree(root, right, validation_db, temp_acc, depth + 1)
+        curr_acc, r_depth = _prune_tree(
+            root, right, validation_db, temp_acc, depth + 1)
 
     if node.is_leaf:
         return pre_prune_acc, depth
-    
+
     if left.is_leaf and right.is_leaf:
         value = node.value
         total = left.count + right.count
-        
+
         if left.count > right.count:
             node.value = left.value
-        
+
         else:
             node.value = right.value
-        
+
         node.count = total
         node.left = None
         node.right = None
         post_prune_acc, _ = evaluate(validation_db, root)
-        
+
         if post_prune_acc < curr_acc:
             node.value = value
             node.left = left
