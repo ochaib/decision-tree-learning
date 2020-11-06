@@ -4,6 +4,7 @@ from train import train
 from evaluate import evaluate, calculate_measures, prune_tree
 from visualizer import visualize
 
+
 def generate_test_training(dataset, k):
     # Shuffle test dataset
     np.random.shuffle(dataset)
