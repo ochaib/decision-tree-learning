@@ -12,7 +12,7 @@ def function_h(np_dataset):
     # from 1 to k multiplied by the log2 of pk. Negated.
 
     # Extract label column from dataset
-    labels = np_dataset[:, -1]
+    labels = np_dataset[:, LABEL_INDEX]
     n_labels = len(labels)
     psum = 0
 

@@ -26,7 +26,9 @@ def evaluate(test_db, trained_tree):
               Confusion matrix
     :rtype: float, np.array
     """
-    confusion_matrix = np.zeros((4, 4))
+    # Retrieve number of labels for use in creation of confusion matrix.
+    cm_shape = len(np.unique(test_db[:, LABEL_INDEX]))
+    confusion_matrix = np.zeros((cm_shape, cm_shape))
     for i in range(len(test_db)):
         prediction = int(predict_value(test_db[i, :LABEL_INDEX], trained_tree))
         confusion_matrix[prediction - 1, int(test_db[i, LABEL_INDEX] - 1)] += 1
