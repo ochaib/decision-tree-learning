@@ -53,6 +53,3 @@ def calculate_measures(confusion_matrix):
         f1 = (2 * precision * recall) / (precision + recall)
         print(f'''Class {i + 1}: recall = {recall}, 
                 precision = {precision}, f1 = {f1}''')
-
-
-

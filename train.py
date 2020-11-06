@@ -11,7 +11,7 @@ def function_h(np_dataset):
     # by total number of samples from initial dataset, for each label
     # from 1 to k multiplied by the log2 of pk. Negated.
 
-    # Extract label column from dataset.
+    # Extract label column from dataset
     labels = np_dataset[:, -1]
     n_labels = len(labels)
     psum = 0
@@ -36,7 +36,7 @@ def evaluate_information_gain(np_dataset, l_dataset, r_dataset):
     return function_h(np_dataset) - remainder(l_dataset, r_dataset)
 
 
-# Training functions for splitting tree.
+# Training functions for splitting tree
 def split_on_cond(array, cond):
     return [array[cond], array[~cond]]
 
@@ -48,10 +48,10 @@ def find_split(dataset):
     # For each feature, sort its values, and consider only split points that
     # are between two examples with different class labels.
 
-    # While keeping track of the running totals? of positive and negative
-    # examples on each side of the split point??
+    # While keeping track of the running totals of positive and negative
+    # examples on each side of the split point
 
-    # Highest information gain.
+    # Highest information gain
     highest_information_gain = None
     # Highest information gain attribute, value, left, right and sorted datasets.
     hig_attribute = None
@@ -112,8 +112,6 @@ def train(training_dataset, depth=1):
         # Attribute refers to the index or a column of the matrix, training_dataset.
         # Create a new leaf TreeNode with the label (which is they same for all
         # entries in the dataset) as the value.
-        # But looking at the dataset just because the label is the same doesn't
-        # mean that the values are the same so which value are we choosing?
         node = TreeNode(training_dataset[0][LABEL_INDEX])
         node.count = len(training_dataset)
         return node, depth
@@ -127,6 +125,7 @@ def train(training_dataset, depth=1):
         node.add_left_child(l_branch)
         node.add_right_child(r_branch)
         return node, max(l_depth, r_depth)
+
 
 def prune_tree(root, validation_db, accuracy):
     """

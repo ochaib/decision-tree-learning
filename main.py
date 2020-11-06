@@ -18,13 +18,13 @@ def generate_test_training(dataset, k):
     :return: Training datasets, test datasets
     :rtype: np.array, np.array
     """
-    # Shuffle test dataset
+    # Shuffle the test dataset
     np.random.shuffle(dataset)
 
     # Divide the dataset into k equal folds/splits.
     folds = np.array_split(dataset, k)
 
-    # Use k-1 folds for training+validation and 1 for testing
+    # Use k-1 folds for training+validation and 1 for testing.
     training_sets = []
     test_sets = []
     for i in range(k):
@@ -47,19 +47,19 @@ def main(dataset):
     agg_confusion_matrix = np.zeros((4, 4))
     agg_pruned_confusion_matrix = np.zeros((4, 4))
 
-    # Evaluation on unpruned tree.
+    # Evaluation on unpruned tree
     for i in range(k):
         training_db = training_sets[i]
         test_db = test_sets[i]
-        # train
+        # Train
         trained_tree, depth = train(training_db, 1)
-        # evaluate
+        # Evaluate
         (accuracy, confusion_matrix) = evaluate(test_db, trained_tree)
         agg_confusion_matrix += confusion_matrix
         accuracies.append(accuracy)
     # Calculate average accuracy
     agg_confusion_matrix /= k
-    print (agg_confusion_matrix)
+    print(agg_confusion_matrix)
     calculate_measures(agg_confusion_matrix)
     average_accuracy = np.average(accuracies)
 
@@ -71,13 +71,13 @@ def main(dataset):
         for j in range(k - 1):
             training_db = inner_training_sets[j, i]
             validation_db = validation_sets[j, i]
-            # train
+            # Train
             trained_tree, depth = train(training_db, 1)
-            # evaluation
+            # Evaluation
             (accuracy, confusion_matrix) = evaluate(validation_db, trained_tree)
-            # prune
+            # Prune
             pruned_tree = prune_tree(trained_tree, validation_db, accuracy)
-            # evaluate on now pruned tree
+            # Evaluate on now pruned tree
             (pruned_accuracy, pruned_confusion_matrix) = evaluate(test_db, pruned_tree)
             pruned_accuracies.append(pruned_accuracy)
             agg_pruned_confusion_matrix += pruned_confusion_matrix
