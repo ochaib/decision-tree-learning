@@ -47,12 +47,11 @@ def calculate_measures(confusion_matrix):
     column_totals = np.sum(confusion_matrix, axis=0)
     row_totals = np.sum(confusion_matrix, axis=1)
     for i in range(len(confusion_matrix)):
-        true_positives = confusion_matrix[i][i]
+        true_positives = confusion_matrix[i, i]
         precision = true_positives / (row_totals[i])
         recall = true_positives / (column_totals[i])
         f1 = (2 * precision * recall) / (precision + recall)
-        print(f'''Class {i + 1}: recall = {recall}, 
-                precision = {precision}, f1 = {f1}''')
-
-
-
+        print(f'Class {i + 1}:\n'
+              f'    Recall = {recall}\n'
+              f'    Precision = {precision}\n'
+              f'    F1 = {f1}')
