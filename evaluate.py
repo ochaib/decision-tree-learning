@@ -60,6 +60,21 @@ def calculate_measures(confusion_matrix):
 
 
 def prune_tree(root, validation_db, accuracy):
+    """
+    Traverses the tree from the root stopping at nodes with both
+    children as leaf nodes, assessing whether the accuracy improves
+    if the node is replaced by a leaf node, if so the pruning of the
+    node is allowed to persist and the updated accuracy is used to
+    compare against for further pruning.
+    :param root: Root of trained decision tree.
+    :param validation_db: Validation set used to test accuracy.
+    :param accuracy: Accuracy of unpruned trained decision tree.
+    :type root: TreeNode
+    :type validation_db: np.array
+    :type accuracy: float
+    :return: The pruned tree's root node.
+    :rtype: TreeNode
+    """
     _prune_tree(root, root, validation_db, accuracy)
     return root
     
@@ -67,7 +82,7 @@ def prune_tree(root, validation_db, accuracy):
 def _prune_tree(root, node, validation_db, pre_prune_acc):
     left = node.left
     right = node.right
-    # Added due to reference before assignment warning
+    # Added due to reference before assignment warning.
     temp_acc = pre_prune_acc
     curr_acc = pre_prune_acc
 
@@ -81,7 +96,6 @@ def _prune_tree(root, node, validation_db, pre_prune_acc):
         return pre_prune_acc
     
     if left.is_leaf and right.is_leaf:
-        
         value = node.value
         total = left.count + right.count
         
