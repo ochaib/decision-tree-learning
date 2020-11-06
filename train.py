@@ -4,7 +4,7 @@ import numpy as np
 from tree import TreeNode
 
 
-# utility functions for training
+# Utility functions for training.
 def function_h(np_dataset):
     # Sum of pk where pk is the number of samples with label k divided
     # by total number of samples from initial dataset, for each label
@@ -35,14 +35,13 @@ def evaluate_information_gain(np_dataset, l_dataset, r_dataset):
     return function_h(np_dataset) - remainder(l_dataset, r_dataset)
 
 
-# training functions for splitting tree
+# Training functions for splitting tree.
 def split_on_cond(array, cond):
     return [array[cond], array[~cond]]
 
 
 def find_split(dataset):
-    # First find good split points by sorting the values of the attribute
-    # (there are seven attributes)
+    # First find good split points by sorting the values of the attribute.
 
     # Since we have ordered (real) values:
     # For each feature, sort its values, and consider only split points that
@@ -66,7 +65,6 @@ def find_split(dataset):
         # Return dataset sorted by ith attribute (column) value
         dataset = dataset[dataset[:, i].argsort()]
         # Look for independent values also recording what is before and after them.
-        # Should return independent values of attribute sorted correctly.
 
         # Now to split dataset on isolated values, ones that are between two examples
         # with different class labels (last column), to retrieve sets on either side of split.
@@ -98,8 +96,17 @@ def find_split(dataset):
     return hig_attribute, hig_value, hig_sorted_dataset, hig_l_dataset, hig_r_dataset
 
 
-# takes recursive steps to build a tree from given dataset
 def train(training_dataset, depth=1):
+    """
+    Recursively train a decision tree on the training dataset provided
+    as well as an initial depth.
+    :param training_dataset: Dataset used to train decision tree.
+    :param depth: Depth used to recursively
+    :type training_dataset: np.array
+    :type depth: int
+    :return: The root of the trained decision tree.
+    :rtype: TreeNode
+    """
     if len(np.unique(training_dataset[:, LABEL_INDEX])) == 1:
         # Attribute refers to the index or a column of the matrix, training_dataset.
         # Create a new leaf TreeNode with the label (which is they same for all
