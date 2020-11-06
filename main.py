@@ -1,7 +1,7 @@
 import sys
 import numpy as np
-from train import train
-from evaluate import evaluate, calculate_measures, prune_tree
+from train import train, prune_tree
+from evaluate import evaluate, calculate_measures
 from visualizer import visualize
 
 
@@ -59,6 +59,7 @@ def main(dataset):
         accuracies.append(accuracy)
     # Calculate average accuracy
     agg_confusion_matrix /= k
+    print (agg_confusion_matrix)
     calculate_measures(agg_confusion_matrix)
     average_accuracy = np.average(accuracies)
 
@@ -81,6 +82,7 @@ def main(dataset):
             pruned_accuracies.append(pruned_accuracy)
             agg_pruned_confusion_matrix += pruned_confusion_matrix
     agg_pruned_confusion_matrix /= (k * k - 1)
+    print(agg_pruned_confusion_matrix)
     calculate_measures(agg_pruned_confusion_matrix)
     avg_pruned_accuracy = np.average(pruned_accuracies)
 
