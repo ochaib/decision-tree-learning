@@ -12,12 +12,14 @@ The syntax is as follows:
 ``` bash
 python3 main.py path/to/dataset.txt
 ```
-s
+
 To run training & evaluation on both datasets, use:
 ``` bash
 python3 main.py wifidb/clean_dataset.txt
 python3 main.py wifidb/noisy_dataset.txt
 ```
+
+_Note: on certain machines the visualization may display an erroneous GDK asertion error. Please ignore this; the visualization uses the AGG backend but this does not seem to be correctly recognized by `matplotlib`, so the error message is still displayed although the visualization and script will run consistently and correctly regardless._
 
 ## Training (programmatic)
 
