@@ -74,6 +74,11 @@ def main(dataset):
     print("Average Accuracy: ", average_accuracy)
     print("Average Accuracy of Pruned Decision Tree: ", avg_pruned_accuracy)
 
+    # Train on the entire dataset
+    tree, depth = train(np_dataset)
+    # Visualize this, saving it to an aptly named file
+    visualize(tree, depth, dataset[:dataset.rfind('.')] + '.png')
+
 
 if __name__ == "__main__":
     main(sys.argv[-1])

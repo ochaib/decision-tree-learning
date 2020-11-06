@@ -24,14 +24,14 @@ def plot_node(node, depth=1, xmin=0, xmax=1, arrow_heads=False):
           horizontalalignment='center',  bbox=dict(facecolor='none', edgecolor='purple', pad=3.0))
 
 
-def visualize(tree_root, depth, save=False):
+def visualize(tree_root, depth, save=False, maxwidth=2**16):
     plt.clf()
     fig = plt.figure()
     plt.axis('off')
     plt.tight_layout()
     plt.ylim((0, Y_INCREMENT * depth * 2))
     plot_node(tree_root)
-    fig.set_size_inches(depth**2, depth)
+    fig.set_size_inches(min(depth**2, maxwidth), depth)
     if save:
         plt.savefig(save)
     else:
