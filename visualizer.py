@@ -10,7 +10,7 @@ def plot_node(node, depth=1, xmin=0, xmax=1, arrow_heads=False):
     y = depth * Y_INCREMENT
     if not node.is_leaf:
         depth += 1
-        plt.text(x, y, f'Room {node.attr+1} > {int(node.value)}', horizontalalignment='center')
+        plt.text(x, y, f'Signal {node.attr+1} > {int(node.value)}', horizontalalignment='center')
         plot_node(node.left, depth + 1, xmin, x)
         plot_node(node.right, depth + 1, x, xmax)
         if arrow_heads:
