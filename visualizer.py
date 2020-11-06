@@ -1,7 +1,6 @@
 from constants import *
-import matplotlib
-matplotlib.use('Agg') # to work headless
-plt = matplotlib.pyplot # importing directly causes GDK error on Lab machines
+import matplotlib.pyplot as plt
+plt.switch_backend('agg')
 
 def plot_node(node, depth=1, xmin=0, xmax=1, arrow_heads=False):
     x = (xmin + xmax) / 2
