@@ -60,7 +60,7 @@ def main(dataset):
             # train
             trained_tree, depth = train(training_db, 1)
             # evaluation
-            (accuracy, confusion_matrix) = evaluate(test_db, trained_tree)
+            (accuracy, confusion_matrix) = evaluate(validation_db, trained_tree)
             # prune
             pruned_tree = prune_tree(trained_tree, validation_db, accuracy)
             # evaluate on now pruned tree

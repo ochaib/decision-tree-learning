@@ -119,9 +119,3 @@ def train(training_dataset, depth=1):
         node.add_left_child(l_branch)
         node.add_right_child(r_branch)
         return node, max(l_depth, r_depth)
-
-
-
-        
-
-        
