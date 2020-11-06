@@ -10,13 +10,13 @@ The script takes a single parameter (a commandline argument, the path for the da
 
 The syntax is as follows:
 ``` bash
-python main.py path/to/dataset.txt
+python3 main.py path/to/dataset.txt
 ```
-
+s
 To run training & evaluation on both datasets, use:
 ``` bash
-python main.py wifidb/clean_dataset.txt
-python main.py wifidb/noisy_dataset.txt
+python3 main.py wifidb/clean_dataset.txt
+python3 main.py wifidb/noisy_dataset.txt
 ```
 
 ## Training (programmatic)
