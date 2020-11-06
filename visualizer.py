@@ -1,11 +1,6 @@
+from constants import *
 import matplotlib.pyplot as plt
-
 plt.switch_backend('agg')
-
-Y_INCREMENT = 0.1
-PADDING = 0.04
-ARROW_SIZE = 0.5
-
 
 def plot_node(node, depth=1, xmin=0, xmax=1, arrow_heads=False):
     x = (xmin + xmax) / 2

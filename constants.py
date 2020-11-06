@@ -1,3 +1,9 @@
 # CONSTANTS
 
+# Dataset
 LABEL_INDEX = 7
+
+# Visualizer
+Y_INCREMENT = 0.1
+PADDING = 0.04
+ARROW_SIZE = 0.5
