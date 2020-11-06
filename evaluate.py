@@ -1,6 +1,7 @@
 from constants import *
 import numpy as np
 
+
 def predict_value(features, trained_tree):
     node = trained_tree
     while not node.is_leaf:
@@ -10,10 +11,11 @@ def predict_value(features, trained_tree):
             node = node.right
     return node.value
 
+
 def evaluate(test_db, trained_tree):
     confusion_matrix = np.zeros((4, 4))
     for i in range(len(test_db)):
-        prediction = int(predict_value(test_db[i][:LABEL_INDEX], trained_tree))
+        prediction = int(predict_value(test_db[i, :LABEL_INDEX], trained_tree))
         confusion_matrix[prediction - 1, int(test_db[i, LABEL_INDEX] - 1)] += 1
     accuracy = np.trace(confusion_matrix) / np.sum(confusion_matrix)
     return accuracy, confusion_matrix
@@ -33,3 +35,53 @@ def calculate_measures(confusion_matrix):
         f1 = (2 * precision * recall) / (precision + recall)
         print(f'''Class {i + 1}: recall = {recall}, 
                 precision = {precision}, f1 = {f1}''')
+
+
+def prune_tree(root, validation_db, accuracy):
+    _prune_tree(root, root, validation_db, accuracy)
+    return root
+    
+
+def _prune_tree(root, node, validation_db, pre_prune_acc):
+    left = node.left
+    right = node.right
+    # Added due to reference before assignment warning
+    temp_acc = pre_prune_acc
+    curr_acc = pre_prune_acc
+
+    if left is not None:
+        temp_acc = _prune_tree(root, left, validation_db, pre_prune_acc)
+    
+    if right is not None:
+        curr_acc = _prune_tree(root, right, validation_db, temp_acc)
+
+    if node.is_leaf:
+        return pre_prune_acc
+    
+    if left.is_leaf and right.is_leaf:
+        
+        value = node.value
+        total = left.count + right.count
+        
+        if left.count > right.count:
+            node.value = left.value
+        
+        else:
+            node.value = right.value
+        
+        node.count = total
+        node.left = None
+        node.right = None
+        post_prune_acc, _ = evaluate(validation_db, root)
+        
+        if post_prune_acc < curr_acc:
+            node.value = value
+            node.left = left
+            node.right = right
+            node.count = 0
+            return curr_acc
+        else:
+            return post_prune_acc
+
+    else:
+        return curr_acc

@@ -6,6 +6,7 @@ class TreeNode:
         self.attr = attr
         self.left = left
         self.right = right
+        self.count = 0
 
     def TreeNode(self):
         return {self.attr, self.value, self.left, self.right}
