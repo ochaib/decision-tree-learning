@@ -1,4 +1,4 @@
-# Decision Trees - Coursework 1
+# Decision Trees
 
 This project focuses on developing a well-evaluated method of training decision trees to high accuracy on WiFi localization datasets (included in `wifidb/`).
 
